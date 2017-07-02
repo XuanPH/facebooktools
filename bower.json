@@ -1,0 +1,21 @@
+{
+  "name": "facebooktools",
+  "homepage": "https://github.com/xuanph/facebooktools",
+  "authors": [
+    "Pham Hoang Xuan <phxuan.sy@gmail.com>"
+  ],
+  "description": "facebooktools",
+  "main": "index.html",
+  "keywords": [
+    "fbt"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
