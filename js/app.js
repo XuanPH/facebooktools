@@ -16,7 +16,7 @@ myApp.controller('mainController', ['$scope', '$filter', '$http', '$sce', functi
             url: url
         }
         $scope.isLoadingdata = true;
-        $http(req).then(function sucess(res) {
+        $http(req).then(function success(res) {
             console.log('sucess');
             var rs = res.data.data;
             rs.forEach(function (element) {
