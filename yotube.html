@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+<head>
+    <title>Xuân Phạm</title>
+    <meta charset="utf-8">
+    <link type="text/css" rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+    <link type="text/css" rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="bower_components/font-awesome-animation/dist/font-awesome-animation.min.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">
+                    </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container" ng-controller="youtubeController">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-youtube" aria-hidden="true"></i>
+                            <span>Getlink Youtube</span>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="url">Link youtube</label>
+                            <div class="input-group">
+                                <span id="url-addon" class="input-group-addon">
+                                <span aria-hidden="true" class="glyphicon glyphicon-link"></span>
+                                </span>
+                                <input autofocus="autofocus" class="form-control" ng-model="link">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-primary" ng-click="onGet()" ng-disabled="isLoadingdata">
+                        <i class="fa fa-spinner fa-spin" aria-hidden="true" ng-show="isLoadingdata"></i>
+                        <i class="fa fa-search" aria-hidden="true" ng-show="!isLoadingdata"></i>
+                        Get link
+                    </button>
+                        <!--<button type="reset" class="btn btn-danger">                      <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span> 
+                            Reset
+                            </button>-->
+                    </div>
+                    <div class="panel-footer text-center">Copyright © <span id="year">2017</span>
+                        <a href="https://junookyo.blogspot.com/?utm_source=j2team_security">Xuân Phạm</a>
+                        <a href="https://junookyo.blogspot.com/2016/10/j2team-security-chrome-extension.html?utm_source=j2team_security"></a></div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <i class="fa fa-download" aria-hidden="true"></i>
+                            <span>Tải</span>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="alert alert-info" role="alert" ng-bind-html="message"></div>
+                        <button type="button" class="btn btn-primary" ng-click="openNewtab(listDownload[0])" ng-class="{'disabled': !success}">
+                               <span class="fa-stack fa-sm">
+                                    <i class="fa fa-download fa-stack-1x"></i>
+                                    <i ng-show="!success" class="fa fa-ban fa-stack-2x text-danger"></i>
+                                    </span>
+                                HD</button>
+                        <button type="button" class="btn btn-primary" ng-click="openNewtab(listDownload[1])" ng-class="{'disabled': !success}">
+                                <span class="fa-stack fa-sm">
+                                    <i class="fa fa-download fa-stack-1x"></i>
+                                    <i ng-show="!success" class="fa fa-ban fa-stack-2x text-danger"></i>
+                                    </span>
+                                Medium </button>
+                        <button type="button" class="btn btn-primary" ng-click="openNewtab(listDownload[2])" ng-class="{'disabled': !success}">
+                                                           <span class="fa-stack fa-sm">
+                                    <i class="fa fa-download fa-stack-1x"></i>
+                                    <i ng-show="!success" class="fa fa-ban fa-stack-2x text-danger"></i>
+                                    </span>
+                                Medium </button>
+                        <button type="button" class="btn btn-primary" ng-click="openNewtab(listDownload[3])" ng-class="{'disabled': !success}">
+                                                            <span class="fa-stack fa-sm">
+                                    <i class="fa fa-download fa-stack-1x"></i>
+                                    <i ng-show="!success" class="fa fa-ban fa-stack-2x text-danger"></i>
+                                    </span>
+                                Low </button>
+                        <button type="button" class="btn btn-primary" ng-click="openNewtab(listDownload[4])" ng-class="{'disabled': !success}">
+                                                           <span class="fa-stack fa-sm">
+                                    <i class="fa fa-download fa-stack-1x"></i>
+                                    <i ng-show="!success" class="fa fa-ban fa-stack-2x text-danger"></i>
+                                    </span>
+                                Low </button>
+                        <!--<button type="reset" class="btn btn-danger">                      <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span> 
+                            Reset
+                            </button>-->
+                        <br>
+                    </div>
+                    <div class="panel-footer text-center">Copyright © <span id="year">2017</span>
+                        <a href="https://junookyo.blogspot.com/?utm_source=j2team_security">Xuân Phạm</a>
+                        <a href="https://junookyo.blogspot.com/2016/10/j2team-security-chrome-extension.html?utm_source=j2team_security"></a></div>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-info" ng-show="showinfo" role="alert" ng-bind-html="message"></div>
+    </div>
+</body>
+
+</html>
