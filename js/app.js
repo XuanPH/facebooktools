@@ -6,6 +6,7 @@ myApp.controller('mainController', ['$scope', '$filter', '$http', '$sce', functi
     $scope.friends_final = [];
     $scope.count_noaction = 0;
     $scope.showinfo = false;
+    $scope.info_user = {};
     $scope.onShow = function () {
         if ($scope.friends.length <= 0) {
             $scope.getlistfriend();
@@ -16,7 +17,7 @@ myApp.controller('mainController', ['$scope', '$filter', '$http', '$sce', functi
             url: url
         }
         $scope.isLoadingdata = true;
-        $http(req).then(function sucess(res) {
+        $http(req).then(function success(res) {
             console.log('sucess');
             var rs = res.data.data;
             rs.forEach(function (element) {
@@ -102,7 +103,7 @@ myApp.controller('mainController', ['$scope', '$filter', '$http', '$sce', functi
         });
     }
     $scope.onUnfriend = function () {
-        new AsyncRequest().setURI('https://www.facebook.com/ajax/profile/removefriendconfirm.php').setData({ uid: $scope.facebook_id,norefresh:true }).send();
+        new AsyncRequest().setURI('https://www.facebook.com/ajax/profile/removefriendconfirm.php').setData({ uid: $scope.facebook_id, norefresh: true }).send();
     }
     $scope.listPost = function (id, type) {
         var listPost = [];
@@ -123,6 +124,45 @@ myApp.controller('mainController', ['$scope', '$filter', '$http', '$sce', functi
         var template = '<html>' + postId_template + '</html>';
         console.log(template);
         var w = window.open('');
-        w.document.write( $sce.trustAsHtml(template));
+        w.document.write($sce.trustAsHtml(template));
+    }
+    $scope.infomation = function () {
+        var request = {
+            method: 'GET',
+            url: 'https://graph.fb.me/v2.6/me/?fields=about,age_range,birthday,name,picture{url},gender,hometown,id'
+        };
+        $http(request).then(function success(response) {
+
+        }, function error(response) {
+
+        });
+    }
+}]);
+myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', function ($scope, $http, $sce, $log) {
+    $scope.success = false;
+    $scope.isLoadingdata = false;
+    $scope.message = $sce.trustAsHtml('<i class="fa fa-hand-o-left faa-horizontal animated" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;Nhập link youtube ở input kế bên nha');
+    $scope.listDownload = [];
+    $scope.onGet = function () {
+        $scope.isLoadingdata = true;
+        $log.info($scope);
+        var linkApi = 'http://ss.net:88/u.php?u=' + $scope.link;
+        var req = {
+            method: 'GET',
+            url: linkApi
+        };
+        $http(req).then(function s(res) {
+            $scope.listDownload = res.data;
+            $scope.isLoadingdata = false;
+            $scope.success = true;
+            $scope.message = $sce.trustAsHtml('Thành công! chọn link phía dưới để tải nha');
+        }, function e(res) {
+            $scope.message = $sce.trustAsHtml('Lỗi cmnr');
+            $scope.isLoadingdata = false;
+            $scope.success = false;
+        });
+    };
+    $scope.openNewtab = function (link) {
+        window.open(link, '_blank');
     }
 }]);
