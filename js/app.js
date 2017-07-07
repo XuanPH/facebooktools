@@ -1,4 +1,15 @@
-var myApp = angular.module('myApp', []);
+
+var myApp = angular.module('myApp', ['ngRoute']);
+myApp.config(function($routeProvider){
+    $routeProvider.when('/',{
+        templateUrl: 'template.html',
+        controller: 'templateController'
+    }).when('/page1',{
+        templateUrl: '',
+        controller: 'template2Controller'
+    })
+});
+
 myApp.controller('mainController', ['$scope', '$filter', '$http', '$sce', function ($scope, $filter, $http, $sce) {
     $scope.isLoadingdata = false;
     $scope.friends = [];
