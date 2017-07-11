@@ -1,5 +1,31 @@
-var myApp = angular.module('myApp', []);
-myApp.controller('mainController', ['$scope', '$filter', '$http', '$sce', function ($scope, $filter, $http, $sce) {
+
+var myApp = angular.module('myApp', ['ngRoute']);
+
+myApp.config(function($routeProvider){
+    $routeProvider.when('/',{
+        templateUrl: 'view/fb.html',
+        controller: 'fbController'
+    }).when('/getlinku2be/:passtype',{
+        templateUrl : 'view/yotube.html',
+        controller: 'youtubeController'
+    });
+});
+myApp.service('author',function (){
+    this.realname = 'Phạm Hoàng Xuân';
+    this.nickname = 'Azar';
+    this.fblink = 'https://www.facebook.com/only.you.381';
+    this.website = 'http://xuanphuong.xyz/';
+    this.logname = function(){
+        return {
+            name : this.realname,
+            nick : this.nickname,
+            fb : this.fblink,
+            website : this.website
+        };
+    }
+});
+myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce','author', function ($scope, $filter, $http, $sce,author) {
+    $scope.author = author.logname();
     $scope.isLoadingdata = false;
     $scope.friends = [];
     $scope.friends_reaction = [];
@@ -138,8 +164,17 @@ myApp.controller('mainController', ['$scope', '$filter', '$http', '$sce', functi
         });
     }
 }]);
-myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', function ($scope, $http, $sce, $log) {
+myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log','$routeParams','author', 
+function ($scope, $http, $sce, $log, $routeParams, author) {
+    $scope.author = author.logname();
+    $scope.correcttype = 'xuandeptrai';
+    $scope.isCorrect = $routeParams.passtype === $scope.correcttype;
+    console.log($scope.isCorrect);
+    console.log($routeParams === $scope.correcttype);    
+    console.log($routeParams);
+    console.log($scope.correcttype);
     $scope.success = false;
+    $scope.error = false;
     $scope.isLoadingdata = false;
     $scope.message = $sce.trustAsHtml('<i class="fa fa-hand-o-left faa-horizontal animated" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;Nhập link youtube ở input kế bên nha');
     $scope.listDownload = [];
@@ -147,7 +182,7 @@ myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', functi
         $scope.isLoadingdata = true;
         $scope.success = false;
         $log.info($scope);
-        var linkApi = 'http://mapla.pe.hu/api/u.php?u=' + $scope.link;
+        var linkApi = 'http://mapla.pe.hu/getlink/u.php?u=' + $scope.link;
         var req = {
             method: 'GET',
             url: linkApi
@@ -156,18 +191,24 @@ myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', functi
             $scope.listDownload = res.data;
             $scope.isLoadingdata = false;
             $scope.success = true;
+            $scope.error = false;
             $scope.message = $sce.trustAsHtml('Thành công! chọn link phía dưới để tải nha');
         }, function e(res) {
-            $scope.message = $sce.trustAsHtml('Lỗi cmnr');
+            $scope.message = $sce.trustAsHtml('Lỗi: '+res.data);
             $scope.isLoadingdata = false;
             $scope.success = false;
+            $scope.error = true;
         });
     };
     $scope.openNewtab = function (link) {
         window.open(link, '_blank');
     }
+<<<<<<< HEAD
     //remove footer of somee.com
     setTimeout(function () {
         document.getElementsByTagName('center')[0].outerHTML = "";
     }, 500);
+=======
+
+>>>>>>> 642ef984d751d77039d685d4dc1255ade06d6da7
 }]);
