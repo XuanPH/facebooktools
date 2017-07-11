@@ -145,8 +145,9 @@ myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', functi
     $scope.listDownload = [];
     $scope.onGet = function () {
         $scope.isLoadingdata = true;
+        $scope.success = false;
         $log.info($scope);
-        var linkApi = 'http://ss.net:88/u.php?u=' + $scope.link;
+        var linkApi = 'http://mapla.pe.hu/api/u.php?u=' + $scope.link;
         var req = {
             method: 'GET',
             url: linkApi
@@ -165,4 +166,8 @@ myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', functi
     $scope.openNewtab = function (link) {
         window.open(link, '_blank');
     }
+    //remove footer of somee.com
+    setTimeout(function () {
+        document.getElementsByTagName('center')[0].outerHTML = "";
+    }, 500);
 }]);
