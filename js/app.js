@@ -180,6 +180,7 @@ function ($scope, $http, $sce, $log, $routeParams, author) {
     $scope.listDownload = [];
     $scope.onGet = function () {
         $scope.isLoadingdata = true;
+        $scope.success = false;
         $log.info($scope);
         var linkApi = 'http://mapla.pe.hu/getlink/u.php?u=' + $scope.link;
         var req = {
@@ -202,5 +203,12 @@ function ($scope, $http, $sce, $log, $routeParams, author) {
     $scope.openNewtab = function (link) {
         window.open(link, '_blank');
     }
+<<<<<<< HEAD
+    //remove footer of somee.com
+    setTimeout(function () {
+        document.getElementsByTagName('center')[0].outerHTML = "";
+    }, 500);
+=======
 
+>>>>>>> 642ef984d751d77039d685d4dc1255ade06d6da7
 }]);
