@@ -1,6 +1,5 @@
 
-var myApp = angular.module('myApp', ['ngRoute']);
-
+var myApp = angular.module('myApp', ['ngRoute','angularSoundManager']);
 myApp.config(function($routeProvider){
     $routeProvider.when('/',{
         templateUrl: 'view/fb.html',
@@ -8,7 +7,13 @@ myApp.config(function($routeProvider){
     }).when('/getlinku2be/:passtype',{
         templateUrl : 'view/yotube.html',
         controller: 'youtubeController'
+    }).when('/mp3media',{
+        templateUrl : 'view/mp3zing.html',
+        controller: 'musicController'
     });
+});
+myApp.config(function ($httpProvider) {
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
 });
 myApp.service('author',function (){
     this.realname = 'Phạm Hoàng Xuân';
@@ -164,8 +169,7 @@ myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce','author',
         });
     }
 }]);
-myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log','$routeParams','author', 
-function ($scope, $http, $sce, $log, $routeParams, author) {
+myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log','$routeParams','author',function ($scope, $http, $sce, $log, $routeParams, author) {
     $scope.author = author.logname();
     $scope.correcttype = 'xuandeptrai';
     $scope.isCorrect = $routeParams.passtype === $scope.correcttype;
@@ -182,7 +186,7 @@ function ($scope, $http, $sce, $log, $routeParams, author) {
         $scope.isLoadingdata = true;
         $scope.success = false;
         $log.info($scope);
-        var linkApi = 'http://mapla.pe.hu/getlink/u.php?u=' + $scope.link;
+        var linkApi = 'http://mapla.pe.hu/api/u.php?u=' + $scope.link;
         var req = {
             method: 'GET',
             url: linkApi
@@ -203,12 +207,68 @@ function ($scope, $http, $sce, $log, $routeParams, author) {
     $scope.openNewtab = function (link) {
         window.open(link, '_blank');
     }
-<<<<<<< HEAD
     //remove footer of somee.com
     setTimeout(function () {
         document.getElementsByTagName('center')[0].outerHTML = "";
-    }, 500);
-=======
-
->>>>>>> 642ef984d751d77039d685d4dc1255ade06d6da7
+    }, 1000);
 }]);
+myApp.controller('musicController', ['$scope', '$sce', '$http','author', function ($scope, $sce, $http,author) {
+    $scope.basefatrat_url = 'http://mapla.pe.hu/f/'
+    $scope.songs = [];//initSong($scope.basefatrat_url);
+    var dev = 'http://ss.net:88/';
+    var pro = 'http://mapla.pe.hu/api/';
+    var url_api = pro + 'bv2.php?url={url}&keyapi={keyapi}&type={type}';
+    $scope.fatratInit = function () {
+        var fatrat = initSong($scope.basefatrat_url);
+        fatrat.forEach(function (element) {
+            $scope.songs.push(element);
+        }, this);
+    }
+    $scope.clearSongs = function () {
+        $scope.songs = [];
+    }
+    $scope.removeSong = function (e) {
+       $scope.songs = removeByValue($scope.songs,e.song.id);
+    }
+    $scope.convert = function () {
+        if ($scope.urlzing == "")
+            return;
+        var req = {
+            method: 'GET',
+            url: url_api.replace(/{url}/g, $scope.urlzing).replace(/{keyapi}/g, 'xuandeptraikhoaito').replace(/{type}/, 1)
+        };
+        $http(req).then(function success(res) {
+            var url_taking = res.data.url;
+            var req2 = {
+                method: 'GET',
+                url: url_api.replace(/{url}/g, url_taking).replace(/{keyapi}/g, 'xuandeptraikhoaito').replace(/{type}/, 2)
+            };
+            $http(req2).then(function success(res2) {
+                var json_data = JSON.parse(res2.data);
+                var rs_json = JSON.parse(json_data);
+                console.log(rs_json.data[0]);
+                rs_json.data.forEach(function (element) {
+                    var obj = {
+                        id: element.id,
+                        title: element.name,
+                        artist: element.artist,
+                        url: element.source_list[0] // 128kps
+                    };
+                    $scope.songs.push(obj);
+                }, this);
+            }, function errror(res2) {
+                console.log(res2);
+            });
+        }, function error(res) {
+            console.log('Lỗi');
+            console.log(res);
+
+        });
+    }
+}]);
+
+function removeByValue(array, value){
+    return array.filter(function(elem, _index){
+        return value != elem.id ? true : false;
+    });
+}
