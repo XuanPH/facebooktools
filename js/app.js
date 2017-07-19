@@ -1,38 +1,35 @@
 
-var myApp = angular.module('myApp', ['ngRoute','angularSoundManager']);
-myApp.config(function($routeProvider){
-    $routeProvider.when('/',{
+var myApp = angular.module('myApp', ['ngRoute', 'angularSoundManager']);
+myApp.config(function ($routeProvider) {
+    $routeProvider.when('/', {
         templateUrl: 'view/fb.html',
         controller: 'fbController'
-    }).when('/getlinku2be/:passtype',{
-        templateUrl : 'view/yotube.html',
+    }).when('/getlinku2be/:passtype', {
+        templateUrl: 'view/yotube.html',
         controller: 'youtubeController'
-    }).when('/mp3media',{
-        templateUrl : 'view/mp3zing.html',
+    }).when('/mp3media', {
+        templateUrl: 'view/mp3zing.html',
         controller: 'musicController'
     });
 });
 myApp.config(function ($httpProvider) {
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
 });
-myApp.service('author',function (){
+myApp.service('author', function () {
     this.realname = 'Phạm Hoàng Xuân';
     this.nickname = 'Azar';
     this.fblink = 'https://www.facebook.com/only.you.381';
     this.website = 'http://xuanphuong.xyz/';
-    this.logname = function(){
+    this.logname = function () {
         return {
-            name : this.realname,
-            nick : this.nickname,
-            fb : this.fblink,
-            website : this.website
+            name: this.realname,
+            nick: this.nickname,
+            fb: this.fblink,
+            website: this.website
         };
     }
 });
-myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce','author', function ($scope, $filter, $http, $sce,author) {
-    $scope.fb = true;
-    $scope.u2be = false;
-    $scope.music = false;
+myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce', 'author', function ($scope, $filter, $http, $sce, author) {
     $scope.author = author.logname();
     $scope.isLoadingdata = false;
     $scope.friends = [];
@@ -172,15 +169,12 @@ myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce','author',
         });
     }
 }]);
-myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log','$routeParams','author',function ($scope, $http, $sce, $log, $routeParams, author) {
-    $scope.fb = false;
-    $scope.u2be = true;
-    $scope.music = false;
+myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', '$routeParams', 'author', function ($scope, $http, $sce, $log, $routeParams, author) {
     $scope.author = author.logname();
     $scope.correcttype = 'xuandeptrai';
     $scope.isCorrect = $routeParams.passtype === $scope.correcttype;
     console.log($scope.isCorrect);
-    console.log($routeParams === $scope.correcttype);    
+    console.log($routeParams === $scope.correcttype);
     console.log($routeParams);
     console.log($scope.correcttype);
     $scope.success = false;
@@ -204,7 +198,7 @@ myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log','$route
             $scope.error = false;
             $scope.message = $sce.trustAsHtml('Thành công! chọn link phía dưới để tải nha');
         }, function e(res) {
-            $scope.message = $sce.trustAsHtml('Lỗi: '+res.data);
+            $scope.message = $sce.trustAsHtml('Lỗi: ' + res.data);
             $scope.isLoadingdata = false;
             $scope.success = false;
             $scope.error = true;
@@ -218,15 +212,20 @@ myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log','$route
         document.getElementsByTagName('center')[0].outerHTML = "";
     }, 1000);
 }]);
-myApp.controller('musicController', ['$scope', '$sce', '$http','author', function ($scope, $sce, $http,author) {
-    $scope.fb = false;
-    $scope.u2be = false;
-    $scope.music = true;
+myApp.controller('musicController', ['$scope', '$sce', '$http', 'author', function ($scope, $sce, $http, author) {
     $scope.basefatrat_url = 'http://mapla.pe.hu/f/'
     $scope.songs = [];//initSong($scope.basefatrat_url);
+    $scope.song_search = [];
+    $scope.vipdev = false;
+    $scope.server = 'nct';
+    $scope.isLoading = false;
+    $scope.isLoadingSearch = false;
+    $scope.findsuccess = false;
+    var key = 'xuandeptraikhoaito';
     var dev = 'http://ss.net:88/';
     var pro = 'http://mapla.pe.hu/api/';
-    var url_api = pro + 'bv2.php?url={url}&keyapi={keyapi}&type={type}';
+    var url_api = dev + 'bv2.php?url={url}&keyapi=' + key + '&type={type}';
+    var url_api_search = dev + 'searhzing.php?q={key}&a=' + key;
     $scope.fatratInit = function () {
         var fatrat = initSong($scope.basefatrat_url);
         fatrat.forEach(function (element) {
@@ -235,49 +234,125 @@ myApp.controller('musicController', ['$scope', '$sce', '$http','author', functio
     }
     $scope.clearSongs = function () {
         $scope.songs = [];
-    }
+    };
     $scope.removeSong = function (e) {
-       $scope.songs = removeByValue($scope.songs,e.song.id);
-    }
+        $scope.songs = removeByValue($scope.songs, e.song.id);
+    };
+    $scope.save_localstorage = function () {
+        if (typeof (Storage) !== "undefined") {
+            var string_json = JSON.stringify($scope.songs);
+            localStorage.setItem('songs', string_json);
+        } else {
+            alert('Xin lỗi, Trình duyện này không hỗ trợ lưu');
+        }
+    };
+    $scope.open_localstorage = function () {
+        if (typeof (Storage) !== "undefined") {
+            $scope.songs = JSON.parse(localStorage.getItem('songs'));
+        } else {
+            alert('Xin lỗi, Trình duyện này không hỗ trợ lưu');
+        }
+    };
+    $scope.del_localstorage = function () {
+        if (typeof (Storage) !== "undefined") {
+            localStorage.removeItem('songs');
+        } else {
+            alert('Xin lỗi, Trình duyện này không hỗ trợ lưu');
+        }
+    };
     $scope.convert = function () {
-        if ($scope.urlzing == "")
+        $scope.isLoading = true;
+        console.log($scope.urlzing);
+        if ($scope.urlzing == "" || $scope.urlzing === undefined) {
+            $scope.isLoading = false;
             return;
+        }
+
         var req = {
             method: 'GET',
-            url: url_api.replace(/{url}/g, $scope.urlzing).replace(/{keyapi}/g, 'xuandeptraikhoaito').replace(/{type}/, 1)
+            url: url_api.replace(/{url}/g, $scope.urlzing).replace(/{type}/, 1)
         };
         $http(req).then(function success(res) {
             var url_taking = res.data.url;
             var req2 = {
                 method: 'GET',
-                url: url_api.replace(/{url}/g, url_taking).replace(/{keyapi}/g, 'xuandeptraikhoaito').replace(/{type}/, 2)
+                url: url_api.replace(/{url}/g, url_taking).replace(/{type}/, 2)
             };
             $http(req2).then(function success(res2) {
                 var json_data = JSON.parse(res2.data);
                 var rs_json = JSON.parse(json_data);
-                console.log(rs_json.data[0]);
+                console.log(rs_json);
                 rs_json.data.forEach(function (element) {
                     var obj = {
                         id: element.id,
-                        title: element.name,
+                        title: element.name + (element.source_list[0] === undefined ? $sce.trustAsHtml('<span style="color:red;font-weight:bold;cursor:pointer;" data-msg="' + element.msg + '" ng-click="showError(1)">[Lỗi]</span>') : ''),
                         artist: element.artist,
-                        url: element.source_list[0] // 128kps
+                        url: element.source_list[0] || 'http://mp3.zing.vn' + element.link // 128kps
                     };
                     $scope.songs.push(obj);
                 }, this);
+                $scope.isLoading = false;
+                console.log('----- songs ------');
+                console.log($scope.songs);
             }, function errror(res2) {
                 console.log(res2);
+            }).catch(function (e) {
+                {
+                    $scope.isLoading = false;
+                    alert('LỖI!!!! - Link bạn đưa không đúng\nChi tiết: '+ e.message);
+                    throw e;
+                }
             });
         }, function error(res) {
             console.log('Lỗi');
             console.log(res);
-
         });
+    }
+    $scope.search = function () {
+        $scope.song_search = [];
+        $scope.isLoadingSearch = true;
+        if ($scope.keyword == "" || $scope.keyword === undefined) {
+            $scope.isLoadingSearch = false;
+            return;
+        }
+        var req = {
+            method: 'GET',
+            url: url_api_search.replace(/{key}/g, $scope.keyword)
+        };
+        $http(req).then(function success(res) {
+            res.data.forEach(function (element) {
+                var obj = {
+                    url: element.url,
+                    title: element.title,
+                };
+                //console.log(obj)
+                $scope.song_search.push(obj);
+            }, this);
+            $scope.isLoadingSearch = false;
+            console.log($scope.song_search);
+        }, function error(res) {
+        }).catch(function (e) {
+            {
+                $scope.isLoadingSearch = false;
+                alert('Lỗi');
+                throw e;
+            }
+        });
+    }
+    $scope.showError = function (data) {
+        //1 : khong tim thay source_list
+        switch (data) {
+            case 1: alert('Lỗi 1: Không tìm thấy source_list \n- Chi tiết: \nVui lòng thử lại bài khác nha.'); break;
+        }
+    }
+    $scope.addSong = function (e) {
+        $scope.urlzing = e.item.url;
+        $scope.convert();
     }
 }]);
 
-function removeByValue(array, value){
-    return array.filter(function(elem, _index){
+function removeByValue(array, value) {
+    return array.filter(function (elem, _index) {
         return value != elem.id ? true : false;
     });
 }
