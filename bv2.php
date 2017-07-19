@@ -1,14 +1,14 @@
-<?php 
+﻿<?php 
 header('Access-Control-Allow-Origin: *');  
-header('Access-Control-Allow-Origin: http://mysite1.com', false);
-header('Access-Control-Allow-Origin: http://example.com', false);
-header('Access-Control-Allow-Origin: https://www.mysite2.com', false);
-header('Access-Control-Allow-Origin: http://www.mysite2.com', false);
+// header('Access-Control-Allow-Origin: http://mysite1.com', false);
+// header('Access-Control-Allow-Origin: http://example.com', false);
+// header('Access-Control-Allow-Origin: https://www.mysite2.com', false);
+// header('Access-Control-Allow-Origin: http://www.mysite2.com', false);
 class xmlreturn {
     public $url;
     public $author;
 }
-function getSongMP3($url)
+function getSongMP3($url,$isAlbum)
 {
     $link=str_replace(' mp3.zing.vn',' m.mp3.zing.vn',$url); 
     $content_encode=file_get_contents($link); 
@@ -16,6 +16,11 @@ function getSongMP3($url)
     $xml=explode('xml="',$content); 
     $xml=explode('"',$xml[1]); 
     $xml_sub = 'http://mp3.zing.vn'.$xml[0];
+    $xml_desub = $xml[0];
+    if ($isAlbum)
+    {
+        $xml_sub = $xml_desub;
+    }
    /* $data=file_get_contents($xml_sub);
     print $data;
     preg_match('/"source":"(.*)=?"/U',$data,$link); 
@@ -49,21 +54,33 @@ function _viewSource($url){
     curl_setopt($ch, CURLOPT_REFERER, $url); 
     curl_setopt($ch, CURLOPT_ENCODING, 'gzip,deflate'); 
     curl_setopt($ch, CURLOPT_HEADER, false); 
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); 
+    // curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); 
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
     $result = curl_exec($ch); 
     curl_close($ch); 
     return $result; 
 }
 
-if ($_GET["url"] && $_GET["keyapi"])
+if ($_GET["url"] && $_GET["keyapi"] && $_GET["type"])
 {
     if ($_GET['keyapi'] == 'xuandeptraikhoaito'){
-        $loginUrl = 'http://mp3.zing.vn/json/song/get-source/ZmJmTknNCBmLNzHtZbxtvmLH';
-        
-        $result = _viewSource($loginUrl);
-        echo json_encode(($result));
-
+        $sl = strpos($_GET["url"],'album');
+        $isAlbum = false;
+        if ($sl !== false)
+        {
+            $isAlbum = true;
+        }
+        $loginUrl = $_GET["url"];
+        if($_GET["type"] == "1")
+        {
+             $xml_source = getSongMP3($loginUrl,$isAlbum);
+             echo $xml_source;
+        }
+        if($_GET["type"] == "2")
+        {
+            $result = _viewSource($loginUrl);
+            echo json_encode(($result));
+        }
         //print $datad;
         //print_r(getSongMP3($_GET['url']));
     }
@@ -72,7 +89,7 @@ if ($_GET["url"] && $_GET["keyapi"])
         print_r(json_encode($jsonrt));
     }
 }else {
-        $jsonrt = array("error" => 1 , "message" => "Lỗi url");
+        $jsonrt = array("error" => 1 , "message" => "Lỗi param");
         print_r(json_encode($jsonrt));
 }
 //$content = file_get_contents('http://mp3.zing.vn/bai-hat/Doi-Mat-Wanbi-Tuan-Anh/ZWZAOZEW.html');

@@ -6,10 +6,33 @@
     <meta charset="utf-8">
     <link type="text/css" rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
     <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-soundmanager2/dist/angular-soundmanager2.js"></script>
     <script type="text/javascript" src="js/angular-route.min.js"></script>
+    <script type="text/javascript" src="js/song.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
     <link type="text/css" rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.min.css">
     <link type="text/css" rel="stylesheet" href="bower_components/font-awesome-animation/dist/font-awesome-animation.min.css">
+    <style>
+        .play {
+            color: lightgreen;
+        }
+
+        .pause {
+            color: #F9C535;
+        }
+
+        .stop {
+            color: red;
+        }
+
+        .repeat {
+            color: #6DF1CC;
+        }
+
+        .btn2 {
+            padding: 0px 6px !important;
+        }
+    </style>
 </head>
 
 <body>
@@ -20,9 +43,11 @@
                         <i style="font-family: monospace">tools</i>
                     </a>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#/">Tính điểm tương tác FB</a>
+                    <li ng-class="{'active' : fb}"><a href="#/">Tính điểm tương tác FB</a>
                     </li>
-                    <li><a href="#/getlinku2be/xuandeptrai">Get link U2Be</a>
+                    <li ng-class="{'active' : u2be}"><a href="#/getlinku2be/xuandeptrai">Get link U2Be</a>
+                    </li>
+                    <li ng-class="{'active' : music}"><a href="#/mp3media/">Nghe nhạc</a>
                     </li>
                 </ul>
             </div>
