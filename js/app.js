@@ -1,6 +1,6 @@
 
 var myApp = angular.module('myApp', ['ngRoute', 'angularSoundManager']);
-myApp.config(function ($routeProvider) {
+myApp.config(['$routeProvider', function ($routeProvider) {
     $routeProvider.when('/', {
         templateUrl: 'view/fb.html',
         controller: 'fbController'
@@ -10,27 +10,42 @@ myApp.config(function ($routeProvider) {
     }).when('/mp3media', {
         templateUrl: 'view/mp3zing.html',
         controller: 'musicController'
+    }).when('/login', {
+        templateUrl: 'view/login.html',
+        controller: 'loginController'
     });
-});
-myApp.config(function ($httpProvider) {
+}]);
+myApp.config(['$httpProvider', function ($httpProvider) {
     delete $httpProvider.defaults.headers.common['X-Requested-With'];
-});
-myApp.service('author', function () {
+}]);
+// myApp.service('author', function () {
+//     this.realname = 'Phạm Hoàng Xuân';
+//     this.nickname = 'Azar';
+//     this.fblink = 'https://www.facebook.com/only.you.381';
+//     this.website = 'http://xuanphuong.xyz/';
+//     this.logname = function () {
+//         return {
+//             name: this.realname,
+//             nick: this.nickname,
+//             fb: this.fblink,
+//             website: this.website
+//         };
+//     }
+// });
+function author() {
     this.realname = 'Phạm Hoàng Xuân';
     this.nickname = 'Azar';
     this.fblink = 'https://www.facebook.com/only.you.381';
     this.website = 'http://xuanphuong.xyz/';
-    this.logname = function () {
-        return {
-            name: this.realname,
-            nick: this.nickname,
-            fb: this.fblink,
-            website: this.website
-        };
-    }
-});
-myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce', 'author', function ($scope, $filter, $http, $sce, author) {
-    $scope.author = author.logname();
+    return {
+        name: this.realname,
+        nick: this.nickname,
+        fb: this.fblink,
+        website: this.website
+    };
+}
+myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce', function ($scope, $filter, $http, $sce) {
+    $scope.author = author();
     $scope.isLoadingdata = false;
     $scope.friends = [];
     $scope.friends_reaction = [];
@@ -42,14 +57,14 @@ myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce', 'author'
         if ($scope.friends.length <= 0) {
             $scope.getlistfriend();
         }
-        let url = 'https://graph.fb.me/v2.6/me/posts?fields=id,created_time,reactions.limit(10000){id,type,name}&limit=1000&access_token=' + $scope.access_token;
+        var url = 'https://graph.fb.me/v2.6/me/posts?fields=id,created_time,reactions.limit(10000){id,type,name}&limit=1000&access_token=' + $scope.access_token;
         var req = {
             method: 'GET',
             url: url
         }
         $scope.isLoadingdata = true;
         $http(req).then(function success(res) {
-            console.log('sucess');
+            //console.log('sucess');
             var rs = res.data.data;
             rs.forEach(function (element) {
                 if (element.reactions !== undefined) {
@@ -65,7 +80,7 @@ myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce', 'author'
                     }, this);
                 }
             }, this);
-            console.log($scope.friends_reaction);
+            //console.log($scope.friends_reaction);
             $scope.friends.forEach(function (element) {
                 var like = 0, haha = 0, angry = 0, love = 0, wow = 0, sad = 0, thankful = 0, pride = 0;
                 var postsId = [];
@@ -114,7 +129,7 @@ myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce', 'author'
     }
     $scope.getlistfriend = function () {
         listFriend = [];
-        let url = 'https://graph.fb.me/v2.6/me/friends?fields=name,id,picture{url}&limit=5000&access_token=' + $scope.access_token;
+        var url = 'https://graph.fb.me/v2.6/me/friends?fields=name,id,picture&limit=5000&access_token=' + $scope.access_token;
         var req = {
             method: 'GET',
             url: url
@@ -122,7 +137,7 @@ myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce', 'author'
         $http(req).then(function sucess(res) {
             var rs = res.data.data;
             rs.forEach(function (element) {
-                let obj_friend = {
+                var obj_friend = {
                     name: element.name,
                     id: element.id,
                     picture_url: element.picture.data.url
@@ -145,7 +160,7 @@ myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce', 'author'
             }
         }, this);
         var count_id = 1;
-        console.log(type);
+        //console.log(type);
         listPost.forEach(function (element) {
             if (element.type == type) {
                 postId_template += "<b>" + count_id + ", </b><a target='_blank' href='https://fb.com/" + element.id + "'>" + element.id.split('_')[1] + " - " + element.type + "</a></br>";
@@ -153,7 +168,7 @@ myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce', 'author'
             }
         }, this);
         var template = '<html>' + postId_template + '</html>';
-        console.log(template);
+        //console.log(template);
         var w = window.open('');
         w.document.write($sce.trustAsHtml(template));
     }
@@ -169,14 +184,14 @@ myApp.controller('fbController', ['$scope', '$filter', '$http', '$sce', 'author'
         });
     }
 }]);
-myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', '$routeParams', 'author', function ($scope, $http, $sce, $log, $routeParams, author) {
-    $scope.author = author.logname();
+myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', '$routeParams', function ($scope, $http, $sce, $log, $routeParams) {
+    $scope.author = author();
     $scope.correcttype = 'xuandeptrai';
     $scope.isCorrect = $routeParams.passtype === $scope.correcttype;
-    console.log($scope.isCorrect);
-    console.log($routeParams === $scope.correcttype);
-    console.log($routeParams);
-    console.log($scope.correcttype);
+    //console.log($scope.isCorrect);
+    //console.log($routeParams === $scope.correcttype);
+    //console.log($routeParams);
+    //console.log($scope.correcttype);
     $scope.success = false;
     $scope.error = false;
     $scope.isLoadingdata = false;
@@ -186,7 +201,7 @@ myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', '$rout
         $scope.isLoadingdata = true;
         $scope.success = false;
         $log.info($scope);
-        var linkApi = 'http://mapla.pe.hu/api/u.php?u=' + $scope.link;
+        var linkApi = 'http://xuanphuong.xyz/api/u.php?u=' + $scope.link;
         var req = {
             method: 'GET',
             url: linkApi
@@ -209,11 +224,12 @@ myApp.controller('youtubeController', ['$scope', '$http', '$sce', '$log', '$rout
     }
     //remove footer of somee.com
     setTimeout(function () {
-        document.getElementsByTagName('center')[0].outerHTML = "";
+        //document.getElementsByTagName('center')[0].outerHTML = "";
     }, 1000);
 }]);
-myApp.controller('musicController', ['$scope', '$sce', '$http', 'author', function ($scope, $sce, $http, author) {
-    $scope.basefatrat_url = 'http://mapla.pe.hu/f/'
+myApp.controller('musicController', ['$scope', '$sce', '$http', function ($scope, $sce, $http) {
+    $scope.basefatrat_url = 'http://mapla.pe.hu/f/';
+    $scope.author = author();
     $scope.songs = [];//initSong($scope.basefatrat_url);
     $scope.song_search = [];
     $scope.vipdev = false;
@@ -221,11 +237,19 @@ myApp.controller('musicController', ['$scope', '$sce', '$http', 'author', functi
     $scope.isLoading = false;
     $scope.isLoadingSearch = false;
     $scope.findsuccess = false;
+    $scope.localStorageSongs = [];
     var key = 'xuandeptraikhoaito';
     var dev = 'http://ss.net:88/';
-    var pro = 'http://mapla.pe.hu/api/';
-    var url_api = dev + 'bv2.php?url={url}&keyapi=' + key + '&type={type}';
-    var url_api_search = dev + 'searhzing.php?q={key}&a=' + key;
+    var pro = 'http://xuanphuong.xyz/api/';
+    var url_api = pro + 'bv2.php?url={url}&keyapi=' + key + '&type={type}';
+    var url_api_nct = pro + 'nct_getlink.php?url={url}&a=' + key
+    var url_api_search = pro + 'searchzing.php?q={key}&a=' + key;
+    var url_api_search_nct = pro + 'searchnct.php?q={key}&a=' + key;
+    $scope.loadLocalstorage = function () {
+        if (localStorage.getItem('songs') !== undefined) {
+            $scope.localStorageSongs = JSON.parse(localStorage.getItem('songs'));
+        }
+    }
     $scope.fatratInit = function () {
         var fatrat = initSong($scope.basefatrat_url);
         fatrat.forEach(function (element) {
@@ -238,17 +262,65 @@ myApp.controller('musicController', ['$scope', '$sce', '$http', 'author', functi
     $scope.removeSong = function (e) {
         $scope.songs = removeByValue($scope.songs, e.song.id);
     };
-    $scope.save_localstorage = function () {
-        if (typeof (Storage) !== "undefined") {
-            var string_json = JSON.stringify($scope.songs);
-            localStorage.setItem('songs', string_json);
-        } else {
-            alert('Xin lỗi, Trình duyện này không hỗ trợ lưu');
+    $scope.save_localstorage = function (type, name) {
+        if (type == 'new') {
+            if (typeof (Storage) !== "undefined") {
+                var nameList = prompt("Nhập tên của bản lưu", "Muzik xuân");
+                var listSong = JSON.parse(localStorage.getItem('songs'));
+                var newsong = JSON.stringify($scope.songs);
+                var obj = {
+                    name: nameList,
+                    data: newsong
+                };
+                if (listSong !== undefined && listSong != null) {
+                    var list_check = listSong.filter(function (el) {
+                        return el.name == name
+                    });
+                    if (list_check.length > 0) {
+                        alert('Tên đã  tồn tại');
+                        return;
+                    }
+                    listSong.push(obj);
+                } else {
+                    listSong = [];
+                    listSong.push(obj);
+                }
+                var string_json = JSON.stringify(listSong);
+                $scope.del_localstorage();
+                localStorage.setItem('songs', string_json);
+            } else {
+                alert('Xin lỗi, Trình duyện này không hỗ trợ lưu');
+            }
+        }
+        else if (type == 'update') {
+            if (typeof (Storage) !== "undefined") {
+                var list = JSON.parse(localStorage.getItem('songs'));
+                var obj = {
+                    name: name.song_local.name,
+                    data: JSON.stringify($scope.songs)
+                };
+                list = list.filter(function (el) {
+                    return el.name !== name
+                });
+                list.push(obj);
+                var string_json = JSON.stringify(list);
+                $scope.del_localstorage();
+                localStorage.setItem('songs', string_json);
+            } else {
+                alert('Xin lỗi, Trình duyện này không hỗ trợ lưu');
+            }
         }
     };
-    $scope.open_localstorage = function () {
+    $scope.open_localstorage = function (e) {
         if (typeof (Storage) !== "undefined") {
-            $scope.songs = JSON.parse(localStorage.getItem('songs'));
+            if (localStorage.getItem('songs') !== undefined && localStorage.getItem('songs') != null) {
+                var name = e.song_local.name;
+                var lstSongs = JSON.parse(localStorage.getItem('songs'));
+                lstSongs = lstSongs.filter(function (el) {
+                    return el.name == name;
+                });
+                $scope.songs = JSON.parse(lstSongs[0].data);
+            }
         } else {
             alert('Xin lỗi, Trình duyện này không hỗ trợ lưu');
         }
@@ -262,7 +334,7 @@ myApp.controller('musicController', ['$scope', '$sce', '$http', 'author', functi
     };
     $scope.convert = function () {
         $scope.isLoading = true;
-        console.log($scope.urlzing);
+        //console.log($scope.urlzing);
         if ($scope.urlzing == "" || $scope.urlzing === undefined) {
             $scope.isLoading = false;
             return;
@@ -281,31 +353,80 @@ myApp.controller('musicController', ['$scope', '$sce', '$http', 'author', functi
             $http(req2).then(function success(res2) {
                 var json_data = JSON.parse(res2.data);
                 var rs_json = JSON.parse(json_data);
-                console.log(rs_json);
                 rs_json.data.forEach(function (element) {
                     var obj = {
                         id: element.id,
-                        title: element.name + (element.source_list[0] === undefined ? $sce.trustAsHtml('<span style="color:red;font-weight:bold;cursor:pointer;" data-msg="' + element.msg + '" ng-click="showError(1)">[Lỗi]</span>') : ''),
+                        title: element.name,
+                        error: element.source_list[0] === undefined ? true : false,
+                        msg: element.source_list[0] === undefined ? element.msg : "",
                         artist: element.artist,
-                        url: element.source_list[0] || 'http://mp3.zing.vn' + element.link // 128kps
+                        url: element.source_list[0] || 'http://mp3.zing.vn' + element.link, // 128kps
+                        url320: 'http://mp3.zing.vn',
+                        urllossless: 'http://mp3.zing.vn',
+                        server: 'zing'
                     };
                     $scope.songs.push(obj);
                 }, this);
                 $scope.isLoading = false;
-                console.log('----- songs ------');
-                console.log($scope.songs);
+                //console.log('----- songs ------');
+                //console.log($scope.songs);
             }, function errror(res2) {
                 console.log(res2);
             }).catch(function (e) {
                 {
                     $scope.isLoading = false;
-                    alert('LỖI!!!! - Link bạn đưa không đúng\nChi tiết: '+ e.message);
+                    //alert('LỖI!!!! - Link bạn đưa không đúng\nChi tiết: ' + e.message);
+                    $.notify("LỖI!!!! - Link bạn đưa không đúng\nChi tiết: " + e.message, {
+                        animate: {
+                            enter: 'animated bounceInDown',
+                            exit: 'animated bounceOutUp'
+                        },
+                        type: 'danger'
+                    });
                     throw e;
                 }
             });
         }, function error(res) {
-            console.log('Lỗi');
+            //console.log('Lỗi');
             console.log(res);
+        });
+    }
+    $scope.convert_nct = function () {
+        $scope.isLoading = true;
+        var req = {
+            method: 'GET',
+            url: url_api_nct.replace(/{url}/g, $scope.urlzing)
+        };
+        $http(req).then(function success(res) {
+            var element = res.data;
+            var obj = {
+                id: element.id,
+                title: element.title,
+                error: element.error,
+                msg: element.error == 0 ? element.message : "",
+                artist: element.artist,
+                url: element.url,
+                url320: element.url320,
+                urllossless: element.urllossless,
+                server: 'nct'
+            };
+            $scope.songs.push(obj);
+            $scope.isLoading = false;
+        }, function errror(res) {
+            console.log(res);
+        }).catch(function (e) {
+            {
+                $scope.isLoading = false;
+                //alert('LỖI!!!! - Link bạn đưa không đúng\nChi tiết: ' + e.message);
+                $.notify("LỖI!!!! - Link bạn đưa không đúng\nChi tiết: " + e.message, {
+                    animate: {
+                        enter: 'animated bounceInDown',
+                        exit: 'animated bounceOutUp'
+                    },
+                    type: 'danger'
+                });
+                throw e;
+            }
         });
     }
     $scope.search = function () {
@@ -317,19 +438,18 @@ myApp.controller('musicController', ['$scope', '$sce', '$http', 'author', functi
         }
         var req = {
             method: 'GET',
-            url: url_api_search.replace(/{key}/g, $scope.keyword)
+            url: $scope.server == 'zing' ? url_api_search.replace(/{key}/g, $scope.keyword) : url_api_search_nct.replace(/{key}/g, $scope.keyword)
         };
         $http(req).then(function success(res) {
             res.data.forEach(function (element) {
                 var obj = {
                     url: element.url,
                     title: element.title,
+                    server: $scope.server
                 };
-                //console.log(obj)
                 $scope.song_search.push(obj);
             }, this);
             $scope.isLoadingSearch = false;
-            console.log($scope.song_search);
         }, function error(res) {
         }).catch(function (e) {
             {
@@ -342,15 +462,95 @@ myApp.controller('musicController', ['$scope', '$sce', '$http', 'author', functi
     $scope.showError = function (data) {
         //1 : khong tim thay source_list
         switch (data) {
-            case 1: alert('Lỗi 1: Không tìm thấy source_list \n- Chi tiết: \nVui lòng thử lại bài khác nha.'); break;
+            case 1:
+                $.notify("Lỗi 1: Không tìm thấy source_list \n- Chi tiết: \nVui lòng thử lại bài khác nha.", {
+                    animate: {
+                        enter: 'animated bounceInDown',
+                        exit: 'animated bounceOutUp'
+                    },
+                    type: 'danger'
+                });
+                //alert('Lỗi 1: Không tìm thấy source_list \n- Chi tiết: \nVui lòng thử lại bài khác nha.'); 
+                break;
         }
     }
     $scope.addSong = function (e) {
         $scope.urlzing = e.item.url;
-        $scope.convert();
+        if ($scope.server == 'zing') {
+            $scope.convert();
+        } else {
+            $scope.convert_nct();
+        }
+
     }
 }]);
+myApp.controller('authController', ['$scope', '$location', function ($scope, $location) {
 
+    $scope.logedUser = 'chưa đăng nhập';
+    $scope.isLoged = false;
+    firebase.auth().onAuthStateChanged(firebaseUser => {
+        if (firebaseUser) {
+            $scope.$apply(function () {
+                $scope.logedUser = firebaseUser.email.toString();
+                $scope.isLoged = true;
+            });
+        } else {
+            $scope.$apply(function () {
+                $scope.isLoged = false;
+            });
+        }
+    });
+    $scope.logout = function () {
+        firebase.auth().signOut();
+        $location.path('/login');
+    }
+    $scope.updatePassword = function () {
+        var user = firebase.auth().currentUser;
+        var oldPassword = $scope.regold_user_pwd;
+        var res = firebase.auth().signInWithEmailAndPassword(user.email, $scope.regold_user_pwd);
+        res.then(function () {
+            if ($scope.regnew_user_pwd == $scope.regnewre_user_pwd) {
+                user.updatePassword($scope.regnew_user_pwd).then(function () {
+                    //alert('Cập nhật mật khẩu thành công');
+                    $.notify("Cập nhật mật khẩu thành công", {
+                        animate: {
+                            enter: 'animated bounceInDown',
+                            exit: 'animated bounceOutUp'
+                        },
+                        type: 'success'
+                    });
+                }, function (error) {
+                    $.notify("Cập nhật mật khẩu không thành công\nChi tiết: " + error, {
+                        animate: {
+                            enter: 'animated bounceInDown',
+                            exit: 'animated bounceOutUp'
+                        },
+                        type: 'danger'
+                    });
+                    //alert('Cập nhật mật khẩu không thành công\nChi tiết: ' + error);
+                });
+            } else {
+                $.notify("Nhập lại mật khẩu mới không chính xác", {
+                    animate: {
+                        enter: 'animated bounceInDown',
+                        exit: 'animated bounceOutUp'
+                    },
+                    type: 'danger'
+                });
+                //alert('Nhập lại mật khẩu mới không chính xác');
+            }
+        }).catch(function (e) {
+            $.notify("Sai mật khẩu", {
+                animate: {
+                    enter: 'animated bounceInDown',
+                    exit: 'animated bounceOutUp'
+                },
+                type: 'danger'
+            });
+            //alert('Sai mật khẩu');
+        });
+    }
+}]);
 function removeByValue(array, value) {
     return array.filter(function (elem, _index) {
         return value != elem.id ? true : false;
