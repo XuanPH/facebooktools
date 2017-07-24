@@ -245,6 +245,7 @@ myApp.controller('musicController', ['$scope', '$sce', '$http', function ($scope
     var url_api_nct = pro + 'nct_getlink.php?url={url}&a=' + key
     var url_api_search = pro + 'searchzing.php?q={key}&a=' + key;
     var url_api_search_nct = pro + 'searchnct.php?q={key}&a=' + key;
+    var url_api_search_u2b = pro + 'searchu2be.php?q={key}&a=' + key;
     $scope.loadLocalstorage = function () {
         if (localStorage.getItem('songs') !== undefined) {
             $scope.localStorageSongs = JSON.parse(localStorage.getItem('songs'));
@@ -429,16 +430,76 @@ myApp.controller('musicController', ['$scope', '$sce', '$http', function ($scope
             }
         });
     }
+    $scope.convert_ytb = function () {
+        //var api_utb_2_mp3 = 'http://www.youtubeinmp3.com/fetch/?video=https://www.youtube.com/watch?v=WAT-Gy6QsTY';
+        var api_utb_2_mp3 = 'http://www.youtubeinmp3.com/fetch/?format=JSON&video={url}';
+        $scope.isLoading = true;
+
+        var req = {
+            method: 'GET',
+            url: api_utb_2_mp3.replace(/{url}/g, $scope.urlzing)
+        };
+        console.log(api_utb_2_mp3.replace(/{url}/g, $scope.urlzing));
+        $http(req).then(function success(res) {
+            var element = res.data;
+            var obj = {
+                id: 1,
+                title: element.title,
+                artist: '',
+                url: element.link,
+                url320: 'https://youtube.com',
+                urllossless: 'https://youtube.com',
+                server: 'youtube'
+            };
+            if (element.title === undefined) {
+                $.notify("LỖI!!!! - Không thể lấy link này, vui lòng thử lại link khác ", {
+                    animate: {
+                        enter: 'animated bounceInDown',
+                        exit: 'animated bounceOutUp'
+                    },
+                    type: 'danger'
+                });
+                $scope.isLoading = false;
+                return;
+            }
+            $scope.songs.push(obj);
+            $scope.isLoading = false;
+        }, function errror(res) {
+            console.log(res);
+        }).catch(function (e) {
+            {
+                $scope.isLoading = false;
+                //alert('LỖI!!!! - Link bạn đưa không đúng\nChi tiết: ' + e.message);
+                $.notify("LỖI!!!! - Link bạn đưa không đúng\nChi tiết: " + e.message, {
+                    animate: {
+                        enter: 'animated bounceInDown',
+                        exit: 'animated bounceOutUp'
+                    },
+                    type: 'danger'
+                });
+                throw e;
+            }
+        });
+    }
     $scope.search = function () {
         $scope.song_search = [];
         $scope.isLoadingSearch = true;
+        var url_search = url_api_search.replace(/{key}/g, $scope.keyword);
+        if ($scope.server == 'zing') {
+            url_search = url_api_search.replace(/{key}/g, $scope.keyword);
+        } else if ($scope.server == 'nct') {
+            url_search = url_api_search_nct.replace(/{key}/g, $scope.keyword);
+        } else if ($scope.server = 'youtube') {
+            url_search = url_api_search_u2b.replace(/{key}/g, $scope.keyword)
+        }
+
         if ($scope.keyword == "" || $scope.keyword === undefined) {
             $scope.isLoadingSearch = false;
             return;
         }
         var req = {
             method: 'GET',
-            url: $scope.server == 'zing' ? url_api_search.replace(/{key}/g, $scope.keyword) : url_api_search_nct.replace(/{key}/g, $scope.keyword)
+            url: url_search
         };
         $http(req).then(function success(res) {
             res.data.forEach(function (element) {
@@ -449,6 +510,7 @@ myApp.controller('musicController', ['$scope', '$sce', '$http', function ($scope
                 };
                 $scope.song_search.push(obj);
             }, this);
+            console.log($scope.song_search);
             $scope.isLoadingSearch = false;
         }, function error(res) {
         }).catch(function (e) {
@@ -478,8 +540,10 @@ myApp.controller('musicController', ['$scope', '$sce', '$http', function ($scope
         $scope.urlzing = e.item.url;
         if ($scope.server == 'zing') {
             $scope.convert();
-        } else {
+        } else if ($scope.server == 'nct') {
             $scope.convert_nct();
+        } else {
+            $scope.convert_ytb();
         }
 
     }

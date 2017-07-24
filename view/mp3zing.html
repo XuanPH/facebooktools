@@ -6,7 +6,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <i class="fa fa-play" ng-class="{'faa-passing animated': isPlaying}"></i>
-                        <span style="margin-left: 10px;">Đang nghe <b style="color:yellow">{{ currentPlaying.title }} </b><b>({{ currentPostion }} / {{ currentDuration }})</b></span>
+                        <span style="margin-left: 10px;">Đang nghe <b style="color:yellow">{{ currentPlaying.title.length > 30 ? currentPlaying.title.substring(0,30) + '...' : currentPlaying.title }} </b><b>({{ currentPostion }} / {{ currentDuration }})</b></span>
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -155,8 +155,8 @@
                             <tbody>
                                 <tr ng-repeat="song in songs">
                                     <td>
-                                        <a style="cursor: pointer" music-player="play" add-song="song">{{ song.title }} - {{song.artist}}</a>
-                                        <span class="label" ng-class="{'label-primary': (song.server == 'zing' ? true : false),'label-danger': (song.server == 'nct' ? true : false), 'label-default' : (song.server == 'local' ? true : false)}">{{song.server}}</span>
+                                        <a style="cursor: pointer" music-player="play" add-song="song">{{ song.title.length > 35 ? song.title.substring(0,35) + '...' :  song.title }} - {{song.artist}}</a>
+                                        <span class="label" ng-class="{'label-primary': (song.server == 'zing' ? true : false),'label-success': (song.server == 'nct' ? true : false), 'label-default' : (song.server == 'local' ? true : false),'label-danger': (song.server == 'youtube' ? true : false)}">{{song.server}}</span>
                                         <span style="color:red;font-weight:bold;cursor:pointer;" data-msg="" ng-click="showError(1)" ng-show="song.error">[Lỗi]</span>
                                     </td>
                                     <td>
@@ -224,13 +224,17 @@
                                 <!-- Link zing mp3:<input class="form-control" style="width: 100%" rows="3" ng-model="urlzing"></input> -->
                                 <div class="radio">
                                     <label>
-                            <input type="radio" name="optionsRadios" ng-model="server" value="nct" checked ng-change="search()">
-                            Server NCT
-                        </label>
+                                        <input type="radio" name="optionsRadios" ng-model="server" value="nct" checked ng-change="search()">
+                                        Server NCT
+                                    </label>
                                     <label>
-                            <input type="radio" name="optionsRadios" ng-model="server" value="zing" ng-change="search()">
-                            Server Zing
-                        </label>
+                                        <input type="radio" name="optionsRadios" ng-model="server" value="zing" ng-change="search()">
+                                        Server Zing
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="optionsRadios" ng-model="server" value="youtube" ng-change="search()">
+                                        Server Youtube
+                                    </label>
                                 </div>
                                 <div class="input-group">
                                     <span id="url-addon" class="input-group-addon">
@@ -251,7 +255,7 @@
                                         </h4>
                                         <p class="list-group-item-text">
                                             <i>Ấn để thêm vào ds</i>
-                                            <span class="label" ng-class="{'label-primary': (server == 'zing' ? true : false),'label-danger': (server == 'nct' ? true : false)}">{{server}}</span>
+                                            <span class="label" ng-class="{'label-primary': (item.server == 'zing' ? true : false),'label-success': (item.server == 'nct' ? true : false),'label-danger': (item.server == 'youtube' ? true : false)}">{{item.server}}</span>
                                         </p>
                                     </a>
                                 </div>

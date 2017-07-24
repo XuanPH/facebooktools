@@ -66,5 +66,12 @@ var initSong = function(basefatrat_url) {return  [{
         artist: 'The fat rat',
         url: basefatrat_url  + 'Time Lapse.wav',
         server: 'local'
-    }];
-}
+    },
+    {
+        id: 11,
+        title: 'Sakura',
+        artist: 'xxx',
+        url: 'http://www.youtubeinmp3.com/fetch/?video=https://www.youtube.com/watch?v=WAT-Gy6QsTY',
+        server: 'local'
+    }
+];}
