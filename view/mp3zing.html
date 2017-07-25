@@ -6,12 +6,13 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         <i class="fa fa-play" ng-class="{'faa-passing animated': isPlaying}"></i>
-                        <span style="margin-left: 10px;">Đang nghe <b style="color:yellow">{{ currentPlaying.title }} </b><b>({{ currentPostion }} / {{ currentDuration }})</b></span>
+                        <span style="margin-left: 10px;">Đang nghe <b style="color:yellow">{{ currentPlaying.title.length > 30 ? currentPlaying.title.substring(0,30) + '...' : currentPlaying.title }} </b><b>({{ currentPostion }} / {{ currentDuration }})</b></span>
                     </h3>
                 </div>
                 <div class="panel-body">
                     <div class="progress seekBase" seek-track>
-                        <div class="progress-bar seekLoad" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( progress + '%' ) }">
+                        <div class="progress-bar seekLoad progress-bar-striped active" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"
+                            ng-style="{width : ( progress + '%' ) }">
                         </div>
                     </div>
                     <button prev-track class="btn btn-primary"><i class="fa fa-backward faa-shake animated-hover"></i></button>
@@ -28,7 +29,8 @@
                     <div class="col-md-12" style="margin-left: -30px;">
                         <div class="col-md-8">
                             <div class="progress">
-                                <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" ng-style="{width : ( volume + '%' ) }">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"
+                                    ng-style="{width : ( volume + '%' ) }">
                                 </div>
                                 <span style="margin-left: 1px;"></span>{{volume}}%
                             </div>
@@ -60,23 +62,26 @@
                     <button clear-playlist class="btn btn-primary"><i class="fa fa-times" aria-hidden="true"></i> Xóa danh sách</button>
                     <br/>
                     <br/>
-                    <table class="table">
-                        <tbody>
-                            <tr ng-repeat="song in playlist">
-                                <td>
-                                    <a style="cursor: pointer" play-from-playlist="song">{{ song.title }}</a>
-                                </td>
-                                <td>
-                                    <a style="cursor: pointer" remove-from-playlist="song" data-index="{{$index}}"><small><i class="fa fa-minus faa-shake animated-hover" style="color:red" aria-hidden="true"></i></small></a>
-                                </td>
-                                <td>
-                                    <span ng-if="currentPlaying.id == song.id">
+                    <div style="max-height: 300px;overflow-y:scroll; ">
+                        <table class="table">
+                            <tbody>
+                                <tr ng-repeat="song in playlist">
+                                    <td>
+                                        <a style="cursor: pointer" play-from-playlist="song">{{ song.title }}</a>
+                                    </td>
+                                    <td>
+                                        <a style="cursor: pointer" remove-from-playlist="song" data-index="{{$index}}"><small><i class="fa fa-minus faa-shake animated-hover" style="color:red" aria-hidden="true"></i></small></a>
+                                    </td>
+                                    <td>
+                                        <span ng-if="currentPlaying.id == song.id">
                                             <i class="fa fa-chevron-left faa-horizontal animated" aria-hidden="true"></i>
                                         </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
                 <div class="panel-footer text-center">Copyright © <span id="year">2017</span>
                     <a href="https://junookyo.blogspot.com/?utm_source=j2team_security">Xuân Phạm</a>
@@ -94,34 +99,100 @@
                 </div>
                 
                 <div class="panel-body">
-                    Link zing mp3:<input class="form-control" style="width: 100%" rows="3" ng-model="urlzing"></input>
+                    <!-- Link zing mp3:<input class="form-control" style="width: 100%" rows="3" ng-model="urlzing"></input> -->
+
+                    <div class="input-group" ng-show="vip-dev">
+                        <span id="url-addon" class="input-group-addon">
+                                Zing mp3
+                                <span aria-hidden="true" class="glyphicon glyphicon-link"></span>
+                        </span>
+                        <input type="text" style="width: 100%" rows="4" class="form-control ng-pristine ng-valid" ng-model="urlzing">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" ng-click="convert()">Get Link</button>
+                        </span>
+                    </div>
                     <br>
-                    <button class="btn btn-primary" ng-click="convert()"><i class="fa fa-refresh" aria-hidden="true"></i> Chuyển đổi</button>
+                    <!-- <button class="btn btn-primary" ng-click="convert()"><i class="fa fa-refresh" aria-hidden="true"></i> Chuyển đổi</button> -->
                     <button class="btn btn-primary" ng-click="fatratInit()"><i class="fa fa-refresh" aria-hidden="true"></i> FAT RAT TIME</button>
                     <button class="btn btn-primary" ng-click="clearSongs()"><i class="fa fa-refresh" aria-hidden="true"></i> Clear</button>
-                    <br>
-                    <br>
-                    <table class="table">
-                        <tbody>
-                            <tr ng-repeat="song in songs">
-                                <td>
-                                    <a style="cursor: pointer" music-player="play" add-song="song">{{ song.title }} - {{song.artist}}</a>
-                                </td>
-                                <td>
-                                    <a style="cursor: pointer" music-player add-song="song"><small><i class="fa fa-plus faa-shake animated-hover" style="color:green" aria-hidden="true"></i></small></a>
-                                </td>
-                                <td>
-                                    <a style="cursor: pointer" download="{{song.id}}" href="{{song.url}}"><small><i class="fa fa-download faa-shake animated-hover" style="color:blue" aria-hidden="true"></i></small></a>
-                                </td>
-                                <td>
-                                    <a style="cursor: pointer" data-id="{{song.id}}" ng-click="removeSong(this)"><small><i class="fa fa-minus faa-shake animated-hover" style="color:blue" aria-hidden="true"></i></small></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- <button class="btn btn-primary" ng-click="save_localstorage()"><i class="fa fa-save" aria-hidden="true"></i> Lưu</button> -->
+                    <div class="btn-group">
+                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown"><i class="fa fa-save" aria-hidden="true"></i> Lưu</button>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="song_local in localStorageSongs">
+                                <a style="cursor: pointer" ng-click="save_localstorage('update',this)">
+                                    <small><i class="fa fa-save faa-shake animated-hover" aria-hidden="true"></i> {{song_local.name}}</small>
+                                </a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li><a ng-click="save_localstorage('new','')">Lưu mới</a></li>
+                        </ul>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" ng-click="loadLocalstorage()"><i class="fa fa-folder-open-o" aria-hidden="true"></i> Mở lưu</button>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="song_local in localStorageSongs">
+                                <a href="#"> <a style="cursor: pointer" ng-click="open_localstorage(this)"><small><i class="fa fa-download faa-shake animated-hover"  aria-hidden="true"></i>{{song_local.name}}</small></a></a>
+                            </li>
+                            <!-- <li role="separator" class="divider"></li>
+                                                <li><a>Lưu ý: 320kb và lossless<br> chỉ được sử dụng trên nct</a></li> -->
+                        </ul>
+                    </div>
 
-                    <button play-all="songs" class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Chạy tất cả</button>
-                    <button play-all="songs" data-play="false" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i> Thêm tất cả</button>
+                    <button class="btn btn-primary" ng-click="del_localstorage()"><i class="fa fa-folder-open-o" aria-hidden="true"></i> Xóa lưu</button>
+                    <br>
+                    <br>
+                    <button play-all="songs" class="btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i> Chạy tất cả    <span class="badge">{{songs.length}}</span></button>
+                    <button play-all="songs" data-play="false" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i> Thêm tất cả    <span class="badge">{{songs.length}}</span></button>
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#myModal"><i class="fa fa-search" aria-hidden="true"></i> Tìm kiếm    <span class="badge">{{song_search.length}}</button>
+                    <!-- Button trigger modal -->
+                    <br>
+                    <br>
+                    <div>
+                        <!-- <div style="max-height: 345px;overflow-y:scroll; "> -->
+                        <table class="table">
+                            <tbody>
+                                <tr ng-repeat="song in songs">
+                                    <td>
+                                        <a style="cursor: pointer" music-player="play" add-song="song">{{ song.title.length > 35 ? song.title.substring(0,35) + '...' :  song.title }} - {{song.artist}}</a>
+                                        <span class="label" ng-class="{'label-primary': (song.server == 'zing' ? true : false),'label-success': (song.server == 'nct' ? true : false), 'label-default' : (song.server == 'local' ? true : false),'label-danger': (song.server == 'youtube' ? true : false)}">{{song.server}}</span>
+                                        <span style="color:red;font-weight:bold;cursor:pointer;" data-msg="" ng-click="showError(1)" ng-show="song.error">[Lỗi]</span>
+                                    </td>
+                                    <td>
+
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <button type="button" music-player add-song="song" class="btn btn-success btn-xs"><small><i class="fa fa-plus faa-shake animated-hover" aria-hidden="true"></i></small></button>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><small><i class="fa fa-download faa-shake animated-hover"  aria-hidden="true"></i></small> </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a ng-show="song.server == 'nct' || song.server == 'zing' ? true : false"
+                                                        style="cursor: pointer" download="{{song.id}}" href="{{song.url}}"><small><i class="fa fa-download faa-shake animated-hover" aria-hidden="true"></i> Tải 128kb</small></a></li>
+                                                <li><a href="#"> <a ng-show="song.server == 'nct' ? true : false" style="cursor: pointer" download="{{song.id}}" href="{{song.url320}}"><small><i class="fa fa-download faa-shake animated-hover"  aria-hidden="true"></i> Tải 320kb</small></a></a>
+                                                </li>
+                                                <li><a href="#"> <a ng-show="song.server == 'nct' ? true : false" style="cursor: pointer" download="{{song.id}}" href="{{song.urllossless}}"><small><i class="fa fa-download faa-shake animated-hover" aria-hidden="true"></i>  Tải lossless</small></a></a>
+                                                </li>
+                                                <li><a href="#"> <a ng-show="song.server == 'local' ? true : false" style="cursor: pointer" download="{{song.id}}" href="{{song.url}}"><small><i class="fa fa-download faa-shake animated-hover" aria-hidden="true"></i>  Tải full sound</small></a></a>
+                                                </li>
+                                                <li role="separator" class="divider"></li>
+                                                <li><a>Lưu ý: 320kb và lossless<br> chỉ được sử dụng trên nct</a></li>
+                                            </ul>
+                                        </div>
+                                        <button type="button" data-id="{{song.id}}" ng-click="removeSong(this)" class="btn btn-danger btn-xs"><small><i class="fa fa-minus faa-shake animated-hover" aria-hidden="true"></i></small></button>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div>
+                        <img ng-show="isLoading" src="loadingv2.gif" style="margin-left: 10%;">
+                    </div>
                     <!--<button type="reset" class="btn btn-danger">                      <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span> 
                             Reset
                             </button>-->
@@ -134,3 +205,78 @@
     </div>
     </br>
     <div class="alert alert-info" ng-show="showinfo" role="alert" ng-bind-html="message"></div>
+    <div class="modal fade " id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Tìm kiếm <span class="badge">{{song_search.length}}</span></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    <i class="fa fa-list" aria-hidden="true"></i>
+                                    <span>Tìm bài hát</span>
+                                </h3>
+                            </div>
+                            <div class="panel-body">
+                                <!-- Link zing mp3:<input class="form-control" style="width: 100%" rows="3" ng-model="urlzing"></input> -->
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="optionsRadios" ng-model="server" value="nct" checked ng-change="search()">
+                                        Server NCT
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="optionsRadios" ng-model="server" value="zing" ng-change="search()">
+                                        Server Zing
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="optionsRadios" ng-model="server" value="youtube" ng-change="search()">
+                                        Server Youtube
+                                    </label>
+                                </div>
+                                <div class="input-group">
+                                    <span id="url-addon" class="input-group-addon">
+                                <span aria-hidden="true" class="glyphicon glyphicon-search"></span>
+                                    </span>
+                                    <!-- <input ng-keyup="search()" type="text" style="width: 100%" rows="4" class="form-control ng-pristine ng-valid" ng-model="keyword"> -->
+                                    <input ng-keydown="$event.keyCode === 13 && search()" type="text" style="width: 100%" rows="4" class="form-control ng-pristine ng-valid"
+                                        ng-model="keyword">
+                                    <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" ng-click="search()">Tìm</button>
+                        </span>
+                                </div>
+                                <br>
+                                <br>
+                                <div class="list-group">
+                                    <a ng-click="addSong(this)" class="list-group-item" ng-repeat="item in song_search" style="cursor: pointer">
+                                        <h4 class="list-group-item-heading">{{item.title}}
+                                        </h4>
+                                        <p class="list-group-item-text">
+                                            <i>Ấn để thêm vào ds</i>
+                                            <span class="label" ng-class="{'label-primary': (item.server == 'zing' ? true : false),'label-success': (item.server == 'nct' ? true : false),'label-danger': (item.server == 'youtube' ? true : false)}">{{item.server}}</span>
+                                        </p>
+                                    </a>
+                                </div>
+                                <br>
+                                <div>
+                                    <img ng-show="isLoadingSearch" src="loadingv2.gif" style="margin-left: 25%;">
+                                </div>
+                                <!--<button type="reset" class="btn btn-danger">                      <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span> 
+                            Reset
+                            </button>-->
+                            </div>
+                            <div class="panel-footer text-center">Copyright © <span id="year">2017</span>
+                                <a href="https://junookyo.blogspot.com/?utm_source=j2team_security">Xuân Phạm</a>
+                                <a href="https://junookyo.blogspot.com/2016/10/j2team-security-chrome-extension.html?utm_source=j2team_security"></a></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
