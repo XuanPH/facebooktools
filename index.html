@@ -57,9 +57,10 @@
                 </ul>
             </div>
             <p class="navbar-text navbar-right">
-                <a ng-show="isLoged" style="cursor:pointer;" data-toggle="modal" data-target="#myModal2" class="navbar-link"><span class="label label-danger">{{logedUser}}</span></a>
+                <a ng-show="isLoged" style="cursor:pointer;" data-toggle="modal" data-target="#myModal2" class="navbar-link"><span class="label label-danger">{{logedUser}} - {{level}}</span></a>
                 <a ng-show="isLoged" style="margin-left: 5px;cursor:pointer;" ng-click="logout()" class="navbar-link"><span class="label label-danger">đăng xuất</span></a>
                 <a ng-show="!isLoged" style="margin-left: 5px; cursor:pointer;" href="#/login" class="navbar-link"><span class="label label-danger">đăng nhập</span></a>
+                <a ng-show="level == 'sAdmin' ? true : false" ng-click="pushThem()" style="margin-left: 5px; cursor:pointer;"class="navbar-link"><span class="label label-danger">Test push notification</span></a>
             </p>
         </div>
         <div class="modal fade " id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
