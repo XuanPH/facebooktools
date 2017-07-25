@@ -552,11 +552,52 @@ myApp.controller('authController', ['$scope', '$location', function ($scope, $lo
 
     $scope.logedUser = 'chưa đăng nhập';
     $scope.isLoged = false;
+    $scope.level = 'nothing';
+    // const dbRefObject = firebase.database().ref().child('thong_bao');
+    // const dbRefChild = dbRefObject.child('messager');  
+    // $scope.pushThem = function(){
+    //     dbRefChild.push('Test push now');
+    // }
+    // //muon truy cap vào thằng  con nữa thì dbRefObject.child('')
+    // dbRefObject.on('value', snap => {
+    //     if (snap.val() != null && snap.val() !== undefined) {
+    //         $.notify("<b>Thông báo</b> " + snap.val().content, {
+    //             animate: {
+    //                 enter: 'animated bounceInDown',
+    //                 exit: 'animated bounceOutUp'
+    //             },
+    //             type: 'success'
+    //         });
+    //     }
+    // });
+    // dbRefChild.on('child_added', snap => {
+    //      $.notify("<b>Thông báo</b> " + snap.val() + '/' + snap.key, {
+    //             animate: {
+    //                 enter: 'animated bounceInDown',
+    //                 exit: 'animated bounceOutUp'
+    //             },
+    //             type: 'success'
+    //         });
+    // });
     firebase.auth().onAuthStateChanged(firebaseUser => {
         if (firebaseUser) {
             $scope.$apply(function () {
                 $scope.logedUser = firebaseUser.email.toString();
                 $scope.isLoged = true;
+                const dbRefObject = firebase.database().ref('/user/' + firebaseUser.uid);
+                const dbMesg = dbRefObject.child('message');
+                dbMesg.on('child_added', snap => {
+                    //console.log('msg: ' + snap.val());
+                });
+                dbMesg.on('value', snap => {
+                    //console.log(snap.val());
+                });
+                dbRefObject.on('value', snap => {
+                    $scope.$apply(function () {
+                        $scope.level = snap.val().level;
+                    });
+
+                });
             });
         } else {
             $scope.$apply(function () {

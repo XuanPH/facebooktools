@@ -12,6 +12,17 @@ myApp.controller('loginController', ['$scope', '$location', function ($scope, $l
     $scope.register = function () {
         var res = firebase.auth().createUserWithEmailAndPassword($scope.reg_user_id, $scope.reg_user_pwd);
         res.then(function () {
+            var userid = firebase.auth().currentUser.uid;
+            console.log(userid);
+            const dbUser = firebase.database().ref('user/' + userid).set({
+                    level : "member",
+                    message : {
+                        "123456" : {
+                            'content' : 'Chào mừng tới xuanphuong.xyz',
+                            'isRead' : 0
+                        }
+                    }
+            });
              $.notify("Đăng ký thành công", {
                 animate: {
                     enter: 'animated bounceInDown',
