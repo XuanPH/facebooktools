@@ -552,7 +552,8 @@ myApp.controller('authController', ['$scope', '$location', function ($scope, $lo
 
     $scope.logedUser = 'chưa đăng nhập';
     $scope.isLoged = false;
-    $scope.level = 'nothing';
+    $scope.level = 'member';
+    $scope.listUser = [];
     // const dbRefObject = firebase.database().ref().child('thong_bao');
     // const dbRefChild = dbRefObject.child('messager');  
     // $scope.pushThem = function(){
@@ -587,7 +588,23 @@ myApp.controller('authController', ['$scope', '$location', function ($scope, $lo
                 const dbRefObject = firebase.database().ref('/user/' + firebaseUser.uid);
                 const dbMesg = dbRefObject.child('message');
                 dbMesg.on('child_added', snap => {
-                    //console.log('msg: ' + snap.val());
+                    if (snap.val().isRead == 0) {
+                        $.notify("Thông báo từ Admin: " + snap.val().content, {
+                            animate: {
+                                enter: 'animated bounceInDown',
+                                exit: 'animated bounceOutUp'
+                            },
+                            type: 'success'
+                        });;
+                    } else {
+
+                    }
+                    var link = 'user/' + firebaseUser.uid + '/message';
+                    var data = {
+                        content : snap.val().content,
+                        isRead : 1
+                    }
+                    update_firebase(link,snap.key,data);
                 });
                 dbMesg.on('value', snap => {
                     //console.log(snap.val());
@@ -596,7 +613,23 @@ myApp.controller('authController', ['$scope', '$location', function ($scope, $lo
                     $scope.$apply(function () {
                         $scope.level = snap.val().level;
                     });
-
+                    if (snap.val().level == 'sAdmin') {
+                        var dbref = firebase.database().ref('user');
+                        dbref.on('value', snap => {
+                            console.log('doc');
+                            if ($scope.listUser.length == 0) {
+                                $scope.$apply(function () {
+                                    Object.keys(snap.val()).forEach(key => {
+                                        var obj = {
+                                            id: key,
+                                            email: snap.val()[key].email
+                                        }
+                                        $scope.listUser.push(obj);
+                                    });
+                                });
+                            }
+                        });
+                    }
                 });
             });
         } else {
@@ -605,6 +638,23 @@ myApp.controller('authController', ['$scope', '$location', function ($scope, $lo
             });
         }
     });
+    $scope.sendMsg = function () {
+        console.log($scope.email);
+        console.log($scope.msg);
+        if ($scope.email != "" && $scope.email !== undefined && $scope.msg != "" && $scope.msg !== undefined) {
+            var msgUser = firebase.database().ref('user/' + $scope.email + '/message');
+            var newMsg = {
+                content: $scope.msg,
+                isRead: 0
+            };
+            var link = 'user/' + $scope.email +'/message';
+            insert_firebase(link,newMsg);
+            // var newMsgKey = firebase.database().ref('user/' + $scope.email).child('message').push().key;
+            // var update = {};
+            // update['/user/' + $scope.email + '/message/' + newMsgKey] = newMsg;
+            // firebase.database().ref().update(update);
+        }
+    }
     $scope.logout = function () {
         firebase.auth().signOut();
         $location.path('/login');
@@ -654,6 +704,23 @@ myApp.controller('authController', ['$scope', '$location', function ($scope, $lo
             });
             //alert('Sai mật khẩu');
         });
+    }
+    function update_firebase(refLink, key, data) // ex: reflink : user/xuanph@twin.vn/message, key: -KqBMrqtWcx2IRvfB9CM, data {content: 'hihi',isRead : 1}
+    {
+        var update = {};
+        update['/' + refLink + '/' + key] = data;
+        firebase.database().ref().update(update);
+    }
+    function insert_firebase(refLink, data) {
+        var insert = {};
+        var newKey = firebase.database().ref(refLink).push().key;
+        insert['/' + refLink + '/' + newKey] = data;
+        firebase.database().ref().update(insert).then(function(res){
+            console.log(res);
+        }).catch(function(ex){
+            console.log(ex);
+        });
+
     }
 }]);
 function removeByValue(array, value) {

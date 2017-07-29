@@ -1,4 +1,6 @@
 myApp.controller('loginController', ['$scope', '$location', function ($scope, $location) {
+    $scope.listUer = [];
+    $scope.userObj = {};
     firebase.auth().onAuthStateChanged(firebaseUser => {
         if (firebaseUser) {
             $scope.$apply(function () {
@@ -15,15 +17,16 @@ myApp.controller('loginController', ['$scope', '$location', function ($scope, $l
             var userid = firebase.auth().currentUser.uid;
             console.log(userid);
             const dbUser = firebase.database().ref('user/' + userid).set({
-                    level : "member",
-                    message : {
-                        "123456" : {
-                            'content' : 'Chào mừng tới xuanphuong.xyz',
-                            'isRead' : 0
-                        }
+                email: firebase.auth().currentUser.email,
+                level: "member",
+                message: {
+                    "123456": {
+                        'content': 'Chào mừng tới xuanphuong.xyz',
+                        'isRead': 0
                     }
+                }
             });
-             $.notify("Đăng ký thành công", {
+            $.notify("Đăng ký thành công", {
                 animate: {
                     enter: 'animated bounceInDown',
                     exit: 'animated bounceOutUp'
@@ -45,7 +48,7 @@ myApp.controller('loginController', ['$scope', '$location', function ($scope, $l
                 type: 'success'
             });
         }).catch(function (e) {
-            $.notify("Lỗi: "+e.message, {
+            $.notify("Lỗi: " + e.message, {
                 animate: {
                     enter: 'animated bounceInDown',
                     exit: 'animated bounceOutUp'

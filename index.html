@@ -60,7 +60,8 @@
                 <a ng-show="isLoged" style="cursor:pointer;" data-toggle="modal" data-target="#myModal2" class="navbar-link"><span class="label label-danger">{{logedUser}} - {{level}}</span></a>
                 <a ng-show="isLoged" style="margin-left: 5px;cursor:pointer;" ng-click="logout()" class="navbar-link"><span class="label label-danger">đăng xuất</span></a>
                 <a ng-show="!isLoged" style="margin-left: 5px; cursor:pointer;" href="#/login" class="navbar-link"><span class="label label-danger">đăng nhập</span></a>
-                <a ng-show="level == 'sAdmin' ? true : false" ng-click="pushThem()" style="margin-left: 5px; cursor:pointer;"class="navbar-link"><span class="label label-danger">Test push notification</span></a>
+                <a ng-show="level == 'sAdmin' ? true : false" data-toggle="modal" data-target="#myModal3" style="margin-left: 5px; cursor:pointer;"
+                    class="navbar-link"><span class="label label-danger">Test push notification</span></a>
             </p>
         </div>
         <div class="modal fade " id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -103,7 +104,54 @@
                                         </div>
                                         <br>
                                         <button class="btn btn-primary" ng-click="updatePassword()"><i class="fa fa-user" aria-hidden="true"></i> Cập nhật</button>
-                                        <button class="btn btn-warning" data-toggle="modal" data-target="#myModal"><i class="fa fa-user" aria-hidden="true"></i> Thoát</button>
+                                        <button class="btn btn-warning" data-toggle="modal" data-target="#myModal2"><i class="fa fa-user" aria-hidden="true"></i> Thoát</button>
+                                        <br>
+                                        <br>
+                                        <span class="badge">Lưu ý: Xuân PH là luật trong trang web này.</span>
+                                    </form>
+                                </div>
+                                <div class="panel-footer text-center">Copyright © <span id="year">2017</span>
+                                    <a href="https://junookyo.blogspot.com/?utm_source=j2team_security">Xuân Phạm</a>
+                                    <a href="https://junookyo.blogspot.com/2016/10/j2team-security-chrome-extension.html?utm_source=j2team_security"></a></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade " id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Gửi thông báo tới member</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="col-md-12">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">
+                                        <i class="fa fa-list" aria-hidden="true"></i>
+                                        <span>{{logedUser}}</span>
+                                    </h3>
+                                </div>
+                                <div class="panel-body" >
+                                    <form name="registerForm">
+                                        <div class="input-group" style="width:100%">
+                                            <select class="form-control" style="width:100%" ng-model="email">
+                                            <option ng-repeat="user in listUser" value="{{user.id}}">{{user.email}}</option>
+                                            </select>
+                                        </div>
+                                        <br>
+                                        <div class="input-group" style="width:100%">
+                                            <textarea ng-model="msg" class="form-control" style="width:100%"></textarea></div>
+                                        <Br>
+                                        <br>
+                                        <button class="btn btn-primary" ng-click="sendMsg()"><i class="fa fa-user" aria-hidden="true"></i> Cập nhật</button>
+                                        <button class="btn btn-warning" data-toggle="modal" data-target="#myModal3"><i class="fa fa-user" aria-hidden="true"></i> Thoát</button>
                                         <br>
                                         <br>
                                         <span class="badge">Lưu ý: Xuân PH là luật trong trang web này.</span>
@@ -136,6 +184,7 @@
         messagingSenderId: "251975340249"
     };
     firebase.initializeApp(config);
+
 </script>
 
 </html>
